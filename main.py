@@ -34,7 +34,7 @@ class Newpost(Handler):
 		self.render_newpost()
 	def post(self):
 		subject = self.request.get("subject")
-		blog_content = self.request.get("blog_content")
+		blog_content = self.request.get("content")
 		if subject and blog_content:
 			a_blog = Blog(subject = subject, blog_content = blog_content)
 			a_blog.put()
