@@ -17,7 +17,7 @@ class MainPage(Handler):
 	"""the index page"""
 	def render_blog(self):
 		db_blogs = db.GqlQuery("SELECT * FROM Blog  ORDER BY created_time DESC")
-		self.render("blog.html", db_blogs = db_blogs)
+		self.render("index.html", db_blogs = db_blogs)
 	def get(self):
 		#self.response.headers['Content-Type'] = 'text/plain'
 		self.render_blog()
@@ -27,27 +27,38 @@ class Newpost(Handler):
 	"""the page for posting a new blog"""
 	def render_newpost(self, subject = "", blog_content = "", error = ""):
 		self.render("newpost.html", subject = subject, 
-					blog_content = blog_content, 
+					content = blog_content, 
 					error = error)
 
 	def get(self):
 		self.render_newpost()
-
 	def post(self):
 		subject = self.request.get("subject")
 		blog_content = self.request.get("blog_content")
 		if subject and blog_content:
 			a_blog = Blog(subject = subject, blog_content = blog_content)
 			a_blog.put()
+			#db.allocate_ids(a_blog.key(), 1000)
 			time.sleep(1)
-			self.redirect('/')
+			self.redirect('/' + str(a_blog.key().id()))
 		else:
 			self.render_newpost(subject = subject, 
 					blog_content = blog_content, 
 					error = POSTNEW_ERROR)
+
+class Pages(Handler):
+	"""pages of blogs"""
+	def render_blog(self, page_id):
+		a_blog = Blog.get_by_id(ids = int(page_id))
+		self.render("pages.html", a_blog = a_blog)
+	def get(self, page_id):
+		#self.response.headers['Content-Type'] = 'text/plain'
+		self.render_blog(page_id)
+
 		
 
 application = webapp2.WSGIApplication([
 					('/', MainPage),
-					("/newpost", Newpost)
+					("/newpost", Newpost),
+					(r"/(\d+)", Pages)
 					], debug=True)
