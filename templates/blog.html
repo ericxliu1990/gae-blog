@@ -1,1 +1,14 @@
 {% extends "base.html" %}
+
+{% block content%}
+<div class="main_blog">
+	{% for a_blog in db_blogs %}
+	<div>
+		<h3>{{a_blog.subject}}</h3>
+		<div>{{a_blog.created_time.date()}}</div>
+		<div>{{a_blog.blog_content}}</div>
+		<div>{{a_blog.key().id()}}</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}
